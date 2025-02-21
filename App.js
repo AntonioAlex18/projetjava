@@ -20,7 +20,7 @@ const App = () => {
                         component={HomeScreen}
                          options={{ headerShown: false }} // ✅ Masquer le titre
                     />
-                    <Stack.Screen name="Loginscreen" component={LoginScreen} />
+                    <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="Registerscreen" component={RegisterScreen} />
                     <Stack.Screen name="ForgotPasswordscreen" component={ForgotPasswordScreen} />
                     <Stack.Screen name="Dashboard" component={Dashboard} />

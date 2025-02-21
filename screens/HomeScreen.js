@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const cities = [
   {
@@ -28,6 +29,8 @@ const CityCard = ({ city }) => (
 );
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       {/* IMAGE PLEIN ÉCRAN EN HAUT */}
@@ -54,6 +57,19 @@ export default function HomeScreen() {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => <CityCard city={item} />}
       />
+
+      {/* BARRE DE NAVIGATION EN BAS */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="home" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="heart-outline" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('LoginScreen')}>
+          <Ionicons name="person-outline" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -81,11 +97,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    fontSize: 36,
+    fontSize: 36, // Augmenté pour correspondre à l'image 2
     fontWeight: 'bold',
     color: '#fff',
     textTransform: 'uppercase',
-
+    letterSpacing: 4, // Espacement augmenté pour un effet plus étiré
+    fontFamily: 'Syne',
   },
   highlight: {
     color: '#FDB927', // Jaune pour "MY"
@@ -108,7 +125,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   card: {
-    width: 300,
+    width: 350,
     height: 450,
     borderRadius: 10,
     overflow: 'hidden',
@@ -122,13 +139,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     left: '50%',
-    transform: [{ translateX: -75 }], // Centrage horizontal
+    transform: [{ translateX: -90 }], // Ajusté pour élargir tout en restant centré
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     borderRadius: 25, // ✅ Forme arrondie
     paddingVertical: 8,
     paddingHorizontal: 20,
     alignItems: 'center',
-    width: 150, // Ajustable selon besoin
+    width: 180, // Augmenté pour élargir
   },
   cityName: {
     color: '#fff',
@@ -140,5 +157,18 @@ const styles = StyleSheet.create({
     color: '#ccc',
     fontSize: 12,
     textAlign: 'center',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 15,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+  navButton: {
+    padding: 10,
   },
 });
