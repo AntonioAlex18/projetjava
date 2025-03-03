@@ -1,126 +1,99 @@
-import React from 'react';
-import { Alert, TouchableOpacity, StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import Header from '../Components/Header';
-import InputText from '../Components/InputText'
-import { theme } from '../core/theme';
-import { emailValidator, passwordValidator } from '../core/utils';
-import * as SQLite from 'expo-sqlite'
+import React, { useState } from 'react';
+import { TouchableOpacity, StyleSheet, Text, View, TextInput } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-class LoginScreen extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: "",
-            password: ""
-        };
-    }
+const LoginScreen = ({ navigation }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    onLoginPressed () {
-        const emailError = emailValidator(this.state.email);
-        const passwordError = passwordValidator(this.state.password);
-        if (emailError || passwordError) {
-            alert()
-            return;
-        }
-        const db = SQLite.openDatabase("database.db");
-        db.transaction(
-            tx => {
-                tx.executeSql("select * from user", [], (_, { rows: { _array } }) =>{
-                    console.log("login")
-                    console.log(_array)
-                    var userConnect = false
-                    for(var i=0; i<_array.length; i++){
-                        if(_array[i].mail == this.state.email && _array[i].mdp == this.state.password) {
-                            userConnect = true
-                            this.props.navigation.navigate('Dashboard', {username: _array[i].name});
-                        }
-                    }
-                    if(userConnect == false){
-                        Alert.alert(
-                            'Erreur',
-                            'L\'email ou le mot de passe est incorrect',
-                            [
-                                {text: 'OK', onPress: () => console.log('OK Pressed')},
-                            ],
-                            {cancelable: false},
-                        );
-                    }
-                }
-                );
-            }
-        );
-    }
+    return (
+        <View style={styles.container}>
+            <Text style={styles.infoText}>Connexion</Text>
 
-    render(){
-        var data = null;
-        var good = false
+            <TextInput
+                style={styles.input}
+                placeholder="Adresse e-mail"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Mot de passe"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+            />
 
+            <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('LoginScreen')}>
+                <Text style={styles.loginButtonText}>Se connecter</Text>
+            </TouchableOpacity>
 
-
-        const {navigate} = this.props.navigation;
-        return (
-            <View>
-                <Header title="Connexion"/>
-
-                <InputText
-                    value={this.state.email}
-                    toto={text => this.setState({ email: text })}
-                />
-                <View class={styles.view}></View>
-
-                <TextInput
-                    label="Password"
-                    returnKeyType="done"
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 10 }}
-                    value={this.state.password}
-                    onChangeText={text => this.setState({ password: text })}
-                    secureTextEntry
-                />
-                <View class={styles.view}></View>
-
-                <Button onPress={() => this.onLoginPressed()} style={styles.button} title="Connexion"/>
-                <View style={styles.row}>
-                    <TouchableOpacity onPress={() => navigate('Registerscreen')}>
-                        <Text style={styles.link}>S'inscrire</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigate('ForgotPasswordscreen')}>
-                        <Text style={styles.link}>Mot de passe oublié</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={styles.bottomNav}>
+                <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('HomeScreen')}>
+                    <Ionicons name="home" size={24} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('FavoriteScreen')}>
+                    <Ionicons name="heart-outline" size={24} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('LoginScreen')}>
+                    <Ionicons name="person-outline" size={24} color="#000" />
+                </TouchableOpacity>
             </View>
-        );
-
-    }
-
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-    forgotPassword: {
-        width: '100%',
-        alignItems: 'flex-end',
-        marginBottom: 24,
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+
     },
-    button: {
-        marginTop: 24,
-    },
-    row: {
-        flexDirection: 'row',
-        marginTop: 4,
-    },
-    label: {
-        color: theme.colors.secondary,
-    },
-    link: {
-        fontWeight: 'bold',
-        color: theme.colors.primary,
-        marginLeft: 10
+    infoText: {
+        fontSize: 36,
+        marginBottom: 80,
+
+        fontWeight: 'bold'
     },
     input: {
-        backgroundColor: "white",
+        width: '90%',
+        height: 50,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 10,
+        paddingHorizontal: 15,
+        marginBottom: 25,
+        fontSize: 16
     },
-    view: {
-        height: 40
-    }
+    loginButton: {
+        backgroundColor: 'black',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 20,
+        marginTop: 40,
+
+    },
+    loginButtonText: {
+        color: 'yellow',
+        fontWeight: 'bold',
+        fontSize: 16
+    },
+    bottomNav: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: '#d3d3d3',
+        paddingVertical: 15,
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+      },
+      navButton: {
+        padding: 10,
+      },
 });
 
-export default (LoginScreen)
+export default LoginScreen;

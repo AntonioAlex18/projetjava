@@ -1,123 +1,128 @@
-import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Button} from 'react-native';
-import Header from '../Components/Header';
-import {
-    emailValidator,
-    passwordValidator,
-    nameValidator,
-} from '../core/utils';
-import * as SQLite from 'expo-sqlite'
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
+const RegisterScreen = ({ navigation }) => {
+  // Définir les états pour email, password et confirmPassword
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-class RegisterScreen extends React.Component {
-    constructor(props) {
-        super(props);
-        //initialise les states
-        this.state = {
-            name: "",
-            email: "",
-            password: "",
-        };
+  // Fonction de validation de l'inscription
+  const handleRegister = () => {
+    if (password !== confirmPassword) {
+      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
+    } else {
+      navigation.navigate('HomeScreen');
     }
+  };
 
-    alerte(){
-        Alert.alert(
-            'Erreur',
-            'Veuillez remplir correctement les champs',
-            [
-                {text: 'OK', onPress: () => console.log('OK Pressed')},
-            ],
-            {cancelable: false},
-        );
-    }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.infoText}>Inscription</Text>
 
-    onSignUpPressed (){
-        console.log("click");
-        console.log(this.props)
-        const nameError = nameValidator(this.state.name);
-        const emailError = emailValidator(this.state.email);
-        const passwordError = passwordValidator(this.state.password);
-        if (emailError || passwordError || nameError) {
-            this.alerte()
-            return;
-        } else {
-            const db = SQLite.openDatabase("database.db");
-            db.transaction(
-                tx => {
-                    tx.executeSql("insert into user (name, mail, mdp) values (?, ?, ?)", [this.state.name, this.state.email, this.state.password]);
-                }
-            );
-            console.log(this.props)
-            this.props.navigation.navigate('Loginscreen')
-        }
-    };
-    render() {
-        const {navigate} = this.props.navigation;
-        return (
-            <View>
-                <Header title="Inscription"/>
-                <TextInput
-                    label="Nom"
-                    style={{ height: 40, borderColor: 'gray',  borderWidth: 1, margin: 10}}
-                    returnKeyType="next"
-                    value={this.state.name}
-                    onChangeText={text => this.setState({ name: text })}
-                />
-                <View class={styles.view}></View>
-                <TextInput
-                    label="E-mail"
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 10 }}
-                    returnKeyType="next"
-                    value={this.state.email}
-                    onChangeText={text => this.setState({ email: text })}
-                    autoCapitalize="none"
-                    autoCompleteType="email"
-                    textContentType="emailAddress"
-                    keyboardType="email-address"
-                />
-                <View class={styles.view}></View>
+      {/* Champ Email */}
+      <TextInput
+        style={styles.input}
+        placeholder="Adresse e-mail"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+      />
 
-                <TextInput
-                    label="Mot de passe"
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 10 }}
-                    returnKeyType="done"
-                    value={this.state.password}
-                    onChangeText={text => this.setState({ password: text })}
-                    secureTextEntry
-                />
-                <View class={styles.view}></View>
-                <Button onPress={() => this.onSignUpPressed() } title="Inscription" style={styles.button}/>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Déja inscrit ? </Text>
-                    <TouchableOpacity onPress={() => navigate('Loginscreen')}>
-                        <Text style={styles.link}>Connectez-vous</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
-    }
+      {/* Champ Mot de passe */}
+      <TextInput
+        style={styles.input}
+        placeholder="Mot de passe"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+
+      {/* Champ Confirmer le Mot de passe */}
+      <TextInput
+        style={styles.input}
+        placeholder="Confirmer le mot de passe"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
+
+      {/* Bouton d'inscription */}
+      <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
+        <Text style={styles.loginButtonText}>S'inscrire</Text>
+      </TouchableOpacity>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('HomeScreen')}>
+          <Ionicons name="home" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('FavoritesScreen')}>
+          <Ionicons name="heart-outline" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('LoginScreen')}>
+          <Ionicons name="person-outline" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    label: {
-        color: '#600EE6',
-    },
-    button: {
-        marginTop: 24,
-    },
-    row: {
-        flexDirection: 'row',
-        marginTop: 4,
-    },
-    link: {
-        fontWeight: 'bold',
-        color: '#600EE6',
-    },
-    input: {
-        backgroundColor: "#ffffff",
-    },
-    view: {
-        height: 40
-    }
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',  // Garder le contenu aligné vers le haut
+    backgroundColor: '#fff',
+    paddingTop: 150,  // Augmenter le paddingTop pour abaisser tout le contenu
+  },
+  infoText: {
+    fontSize: 36,
+    marginBottom: 40,
+    fontWeight: 'bold',
+  },
+  input: {
+    width: '90%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 25,
+    fontSize: 16,
+  },
+  loginButton: {
+    backgroundColor: 'yellow',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 20,
+    marginTop: 40,
+  },
+  loginButtonText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#d3d3d3',
+    paddingVertical: 15,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+  navButton: {
+    padding: 10,
+  },
 });
-export default (RegisterScreen)
+
+export default RegisterScreen;
